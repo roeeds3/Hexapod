@@ -19,6 +19,7 @@ Hexapod::Hexapod(uint8_t driverType)
     , m_height(5)
     , m_walkPhase(0)
     , m_rotatePhase(0)
+    , m_movePhase(0)
     , m_initialized(false)
 #ifdef HEXAPOD_ENABLE_PCA9685
     , m_pca9685(nullptr)
@@ -38,6 +39,7 @@ Hexapod::Hexapod(uint8_t driverType, const HexapodConfig& config)
     , m_height(5)
     , m_walkPhase(0)
     , m_rotatePhase(0)
+    , m_movePhase(0)
     , m_initialized(false)
 #ifdef HEXAPOD_ENABLE_PCA9685
     , m_pca9685(nullptr)
@@ -57,6 +59,7 @@ Hexapod::Hexapod(uint8_t driverType, const HexapodConfig& config, Stream& serial
     , m_height(5)
     , m_walkPhase(0)
     , m_rotatePhase(0)
+    , m_movePhase(0)
     , m_initialized(false)
 #ifdef HEXAPOD_ENABLE_PCA9685
     , m_pca9685(nullptr)
@@ -347,7 +350,7 @@ void Hexapod::walkForward(uint8_t speed) {
     m_walkPhase = (m_walkPhase + 1) % Poses::WALK_PHASE_COUNT;
 }
 
-void Hexapod::walkBackward(uint8_t speed) {
+void Hexapod::walkBackward(uint8_t speed) { //FIX
     switch (m_walkPhase) {
         case 0: setPose(Poses::walkPhase4(m_height, m_config), speed); break;
         case 1: setPose(Poses::walkPhase5(m_height, m_config), speed); break;
@@ -361,30 +364,44 @@ void Hexapod::walkBackward(uint8_t speed) {
     m_walkPhase = (m_walkPhase + 1) % Poses::WALK_PHASE_COUNT;
 }
 
+void Hexapod::move(uint8_t height, Vector v) {
+    switch (m_movePhase) {
+    case 0: setPose(Poses::movePhase0(m_height, m_config), speed); break;
+    case 1: setPose(Poses::movePhase1(m_height, m_config), speed); break;
+    case 2: setPose(Poses::movePhase2(m_height, m_config), speed); break;
+    case 3: setPose(Poses::movePhase3(m_height, m_config), speed); break;
+    case 4: setPose(Poses::movePhase4(m_height, m_config), speed); break;
+    case 5: setPose(Poses::movePhase5(m_height, m_config), speed); break;
+    case 6: setPose(Poses::movePhase6(m_height, m_config), speed); break;
+    case 7: setPose(Poses::movePhase7(m_height, m_config), speed); break;
+    }
+    m_movePhase = (m_movePhase + 1) % Poses::MOVE_PHASE_COUNT;
+}
+
 void Hexapod::rotateClockwise(uint8_t speed) {
     switch (m_rotatePhase) {
-        case 0: setPose(Poses::rotatePhase0(m_height, m_config), speed); break;
-        case 1: setPose(Poses::rotatePhase1(m_height, m_config), speed); break;
-        case 2: setPose(Poses::rotatePhase2(m_height, m_config), speed); break;
-        case 3: setPose(Poses::rotatePhase3(m_height, m_config), speed); break;
-        case 4: setPose(Poses::rotatePhase4(m_height, m_config), speed); break;
-        case 5: setPose(Poses::rotatePhase5(m_height, m_config), speed); break;
-        case 6: setPose(Poses::rotatePhase6(m_height, m_config), speed); break;
-        case 7: setPose(Poses::rotatePhase7(m_height, m_config), speed); break;
+        case 0: setPose(Poses::rotatePhase0(m_height, m_config,true), speed); break;
+        case 1: setPose(Poses::rotatePhase1(m_height, m_config, true), speed); break;
+        case 2: setPose(Poses::rotatePhase2(m_height, m_config, true), speed); break;
+        case 3: setPose(Poses::rotatePhase3(m_height, m_config, true), speed); break;
+        case 4: setPose(Poses::rotatePhase4(m_height, m_config, true), speed); break;
+        case 5: setPose(Poses::rotatePhase5(m_height, m_config, true), speed); break;
+        case 6: setPose(Poses::rotatePhase6(m_height, m_config, true), speed); break;
+        case 7: setPose(Poses::rotatePhase7(m_height, m_config, true), speed); break;
     }
     m_rotatePhase = (m_rotatePhase + 1) % Poses::ROTATE_PHASE_COUNT;
 }
 
 void Hexapod::rotateCounterClockwise(uint8_t speed) {
     switch (m_rotatePhase) {
-        case 0: setPose(Poses::rotatePhase4(m_height, m_config), speed); break;
-        case 1: setPose(Poses::rotatePhase5(m_height, m_config), speed); break;
-        case 2: setPose(Poses::rotatePhase6(m_height, m_config), speed); break;
-        case 3: setPose(Poses::rotatePhase7(m_height, m_config), speed); break;
-        case 4: setPose(Poses::rotatePhase0(m_height, m_config), speed); break;
-        case 5: setPose(Poses::rotatePhase1(m_height, m_config), speed); break;
-        case 6: setPose(Poses::rotatePhase2(m_height, m_config), speed); break;
-        case 7: setPose(Poses::rotatePhase3(m_height, m_config), speed); break;
+        case 0: setPose(Poses::rotatePhase0(m_height, m_config, false), speed); break;
+        case 1: setPose(Poses::rotatePhase1(m_height, m_config, false), speed); break;
+        case 2: setPose(Poses::rotatePhase2(m_height, m_config, false), speed); break;
+        case 3: setPose(Poses::rotatePhase3(m_height, m_config, false), speed); break;
+        case 4: setPose(Poses::rotatePhase4(m_height, m_config, false), speed); break;
+        case 5: setPose(Poses::rotatePhase5(m_height, m_config, false), speed); break;
+        case 6: setPose(Poses::rotatePhase6(m_height, m_config, false), speed); break;
+        case 7: setPose(Poses::rotatePhase7(m_height, m_config, false), speed); break;
     }
     m_rotatePhase = (m_rotatePhase + 1) % Poses::ROTATE_PHASE_COUNT;
 }

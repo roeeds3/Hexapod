@@ -24,9 +24,11 @@ namespace Hexapod {
  */
 class Poses {
 public:
+
     
     static const uint8_t WALK_PHASE_COUNT = 8;
     static const uint8_t ROTATE_PHASE_COUNT = 8;
+    static const uint8_t MOVE_PHASE_COUNT = 8;
     
     static int16_t calcHeight(uint8_t height, const HexapodConfig& cfg) {
         return map(height, 0, 9, cfg.minHomeHeight, cfg.maxHomeHeight);
@@ -69,23 +71,10 @@ public:
     }
     
     // ========================================================================
-    // Tripod Walking Gait — 8-Phase
-    // ========================================================================
-    //
     //  Tripod A: LFront, LBack, RMiddle
     //  Tripod B: RFront, RBack, LMiddle
-    //
-    //  IRON RULE: Grounded feet NEVER change X/Y position unless ALL 6 
-    //  feet are on the ground (phases 3 and 7).
-    //
-    //  Phase 0: A lifts at home.          B on ground at home.
-    //  Phase 1: A swings to +dx in air.   B on ground at home.
-    //  Phase 2: A plants at +dx.          B on ground at home.  (all 6 down)
-    //  Phase 3: A shifts to home.         B shifts to -dx.      (all 6 down, body moves fwd)
-    //  Phase 4: A on ground at home.      B lifts at -dx.
-    //  Phase 5: A on ground at home.      B swings to +dx in air.
-    //  Phase 6: A on ground at home.      B plants at +dx.      (all 6 down)
-    //  Phase 7: A shifts to -dx.          B shifts to home.     (all 6 down, body moves fwd)
+    // ========================================================================
+    // Tripod Walking Gait — 8-Phase
     // ========================================================================
 
     // Phase 0: Lift A at home. B on ground at home.
@@ -286,14 +275,14 @@ public:
         );
     }
     
-    static KeyFrame rotatePhase0(uint8_t height, const HexapodConfig& cfg) {
+    static KeyFrame rotatePhase0(uint8_t height, const HexapodConfig& cfg,bool clockwise) {
         return walkPhase0(height, cfg);
     }
     
-    static KeyFrame rotatePhase1(uint8_t height, const HexapodConfig& cfg) {
+    static KeyFrame rotatePhase1(uint8_t height, const HexapodConfig& cfg, bool clockwise) {
         int16_t z = calcHeight(height, cfg);
         int16_t lift = cfg.footUpOffset;
-        float angle = cfg.rotationAngleDeg;
+        float angle = clockwise ? cfg.rotationAngleDeg : -cfg.rotationAngleDeg;
         
         Position lf = calcLegHome(cfg.anchorLFrontX, cfg.anchorLFrontY, z, cfg);
         Position lm = calcLegHome(cfg.anchorLMiddleX, cfg.anchorLMiddleY, z, cfg);
@@ -309,9 +298,9 @@ public:
         return KeyFrame(lfRot, lm, lbRot, rf, rmRot, rb);
     }
     
-    static KeyFrame rotatePhase2(uint8_t height, const HexapodConfig& cfg) {
+    static KeyFrame rotatePhase2(uint8_t height, const HexapodConfig& cfg, bool clockwise) {
         int16_t z = calcHeight(height, cfg);
-        float angle = cfg.rotationAngleDeg;
+        float angle = clockwise ? cfg.rotationAngleDeg : -cfg.rotationAngleDeg;
         
         Position lf = calcLegHome(cfg.anchorLFrontX, cfg.anchorLFrontY, z, cfg);
         Position lm = calcLegHome(cfg.anchorLMiddleX, cfg.anchorLMiddleY, z, cfg);
@@ -326,9 +315,9 @@ public:
         );
     }
     
-    static KeyFrame rotatePhase3(uint8_t height, const HexapodConfig& cfg) {
+    static KeyFrame rotatePhase3(uint8_t height, const HexapodConfig& cfg, bool clockwise) {
         int16_t z = calcHeight(height, cfg);
-        float angle = cfg.rotationAngleDeg;
+        float angle = clockwise ? cfg.rotationAngleDeg : -cfg.rotationAngleDeg;
         
         Position lf = calcLegHome(cfg.anchorLFrontX, cfg.anchorLFrontY, z, cfg);
         Position lm = calcLegHome(cfg.anchorLMiddleX, cfg.anchorLMiddleY, z, cfg);
@@ -343,10 +332,10 @@ public:
         );
     }
     
-    static KeyFrame rotatePhase4(uint8_t height, const HexapodConfig& cfg) {
+    static KeyFrame rotatePhase4(uint8_t height, const HexapodConfig& cfg, bool clockwise) {
         int16_t z = calcHeight(height, cfg);
         int16_t lift = cfg.footUpOffset;
-        float angle = cfg.rotationAngleDeg;
+        float angle = clockwise ? cfg.rotationAngleDeg : -cfg.rotationAngleDeg;
         
         Position lf = calcLegHome(cfg.anchorLFrontX, cfg.anchorLFrontY, z, cfg);
         Position lm = calcLegHome(cfg.anchorLMiddleX, cfg.anchorLMiddleY, z, cfg);
@@ -362,10 +351,10 @@ public:
         return KeyFrame(lf, lmUp, lb, rfUp, rm, rbUp);
     }
     
-    static KeyFrame rotatePhase5(uint8_t height, const HexapodConfig& cfg) {
+    static KeyFrame rotatePhase5(uint8_t height, const HexapodConfig& cfg, bool clockwise) {
         int16_t z = calcHeight(height, cfg);
         int16_t lift = cfg.footUpOffset;
-        float angle = cfg.rotationAngleDeg;
+        float angle = clockwise ? cfg.rotationAngleDeg : -cfg.rotationAngleDeg;
         
         Position lf = calcLegHome(cfg.anchorLFrontX, cfg.anchorLFrontY, z, cfg);
         Position lm = calcLegHome(cfg.anchorLMiddleX, cfg.anchorLMiddleY, z, cfg);
@@ -381,9 +370,9 @@ public:
         return KeyFrame(lf, lmRot, lb, rfRot, rm, rbRot);
     }
     
-    static KeyFrame rotatePhase6(uint8_t height, const HexapodConfig& cfg) {
+    static KeyFrame rotatePhase6(uint8_t height, const HexapodConfig& cfg, bool clockwise) {
         int16_t z = calcHeight(height, cfg);
-        float angle = cfg.rotationAngleDeg;
+        float angle = clockwise ? cfg.rotationAngleDeg : -cfg.rotationAngleDeg;
         
         Position lf = calcLegHome(cfg.anchorLFrontX, cfg.anchorLFrontY, z, cfg);
         Position lm = calcLegHome(cfg.anchorLMiddleX, cfg.anchorLMiddleY, z, cfg);
@@ -398,9 +387,9 @@ public:
         );
     }
     
-    static KeyFrame rotatePhase7(uint8_t height, const HexapodConfig& cfg) {
+    static KeyFrame rotatePhase7(uint8_t height, const HexapodConfig& cfg, bool clockwise) {
         int16_t z = calcHeight(height, cfg);
-        float angle = cfg.rotationAngleDeg;
+        float angle = clockwise ? cfg.rotationAngleDeg : -cfg.rotationAngleDeg;
         
         Position lf = calcLegHome(cfg.anchorLFrontX, cfg.anchorLFrontY, z, cfg);
         Position lm = calcLegHome(cfg.anchorLMiddleX, cfg.anchorLMiddleY, z, cfg);
@@ -414,9 +403,200 @@ public:
             rf, rotatePosition(rm, -angle), rb
         );
     }
+
+    // ========================================================================
+    // OmniDirectional Walking Poses
+    // ========================================================================
+
+    static KeyFrame movePhase0(uint8_t height, const HexapodConfig& cfg, Vector v) {
+        int16_t z = calcHeight(height, cfg);
+        int16_t lift = cfg.footUpOffset;
+
+        Position lf = calcLegHome(cfg.anchorLFrontX, cfg.anchorLFrontY, z, cfg);
+        Position lm = calcLegHome(cfg.anchorLMiddleX, cfg.anchorLMiddleY, z, cfg);
+        Position lb = calcLegHome(cfg.anchorLBackX, cfg.anchorLBackY, z, cfg);
+        Position rf = calcLegHome(cfg.anchorLFrontX, -cfg.anchorLFrontY, z, cfg);
+        Position rm = calcLegHome(cfg.anchorLMiddleX, -cfg.anchorLMiddleY, z, cfg);
+        Position rb = calcLegHome(cfg.anchorLBackX, -cfg.anchorLBackY, z, cfg);
+
+        return KeyFrame(
+            offsetPosition(lf, 0, 0, lift),    // A — UP
+            lm,                                 // B — ground
+            offsetPosition(lb, 0, 0, lift),    // A — UP
+            rf,                                 // B — ground
+            offsetPosition(rm, 0, 0, lift),    // A — UP
+            rb                                  // B — ground
+        );
+    }
+
+    // Phase 1: A swings to +dx,+dy in air. B stays at home on ground.
+    static KeyFrame movePhase1(uint8_t height, const HexapodConfig& cfg, Vector v) {
+        int16_t z = calcHeight(height, cfg);
+        int16_t dx = static_cast<int>(cfg.footWalkX * v.x);
+        int16_t dy = static_cast<int>(cfg.footWalkX * v.y);
+        int16_t lift = cfg.footUpOffset;
+
+        Position lf = calcLegHome(cfg.anchorLFrontX, cfg.anchorLFrontY, z, cfg);
+        Position lm = calcLegHome(cfg.anchorLMiddleX, cfg.anchorLMiddleY, z, cfg);
+        Position lb = calcLegHome(cfg.anchorLBackX, cfg.anchorLBackY, z, cfg);
+        Position rf = calcLegHome(cfg.anchorLFrontX, -cfg.anchorLFrontY, z, cfg);
+        Position rm = calcLegHome(cfg.anchorLMiddleX, -cfg.anchorLMiddleY, z, cfg);
+        Position rb = calcLegHome(cfg.anchorLBackX, -cfg.anchorLBackY, z, cfg);
+
+        return KeyFrame(
+            offsetPosition(lf, dx, dy, lift),   // A — UP + forward
+            lm,                                 // B — ground at home
+            offsetPosition(lb, dx, dy, lift),   // A — UP + forward
+            rf,                                 // B — ground at home
+            offsetPosition(rm, dx, dy, lift),   // A — UP + forward
+            rb                                  // B — ground at home
+        );
+    }
+
+    // Phase 2: A plants at +dx,+dy. B still at home. ALL 6 ON GROUND.
+    static KeyFrame movePhase2(uint8_t height, const HexapodConfig& cfg, Vector v) {
+        int16_t z = calcHeight(height, cfg);
+        int16_t dx = static_cast<int>(cfg.footWalkX * v.x);
+        int16_t dy = static_cast<int>(cfg.footWalkX * v.y);
+
+        Position lf = calcLegHome(cfg.anchorLFrontX, cfg.anchorLFrontY, z, cfg);
+        Position lm = calcLegHome(cfg.anchorLMiddleX, cfg.anchorLMiddleY, z, cfg);
+        Position lb = calcLegHome(cfg.anchorLBackX, cfg.anchorLBackY, z, cfg);
+        Position rf = calcLegHome(cfg.anchorLFrontX, -cfg.anchorLFrontY, z, cfg);
+        Position rm = calcLegHome(cfg.anchorLMiddleX, -cfg.anchorLMiddleY, z, cfg);
+        Position rb = calcLegHome(cfg.anchorLBackX, -cfg.anchorLBackY, z, cfg);
+
+        return KeyFrame(
+            offsetPosition(lf, dx, dy, 0),      // A — ground at +dx,+dy
+            lm,                                 // B — ground at home
+            offsetPosition(lb, dx, dy, 0),      // A — ground at +dx,+dy
+            rf,                                 // B — ground at home
+            offsetPosition(rm, dx, dy, 0),      // A — ground at +dx,+dy
+            rb                                  // B — ground at home
+        );
+    }
+
+    // Phase 3: BODY SHIFT. All 6 on ground, everything shifts -dx,+dy.
+    // A goes from +dx,+dy to home. B goes from home to -dx,-dy.
+    static KeyFrame movePhase3(uint8_t height, const HexapodConfig& cfg, Vector v) {
+        int16_t z = calcHeight(height, cfg);
+        int16_t dx = static_cast<int>(cfg.footWalkX * v.x);
+        int16_t dy = static_cast<int>(cfg.footWalkX * v.y);
+
+        Position lf = calcLegHome(cfg.anchorLFrontX, cfg.anchorLFrontY, z, cfg);
+        Position lm = calcLegHome(cfg.anchorLMiddleX, cfg.anchorLMiddleY, z, cfg);
+        Position lb = calcLegHome(cfg.anchorLBackX, cfg.anchorLBackY, z, cfg);
+        Position rf = calcLegHome(cfg.anchorLFrontX, -cfg.anchorLFrontY, z, cfg);
+        Position rm = calcLegHome(cfg.anchorLMiddleX, -cfg.anchorLMiddleY, z, cfg);
+        Position rb = calcLegHome(cfg.anchorLBackX, -cfg.anchorLBackY, z, cfg);
+
+        return KeyFrame(
+            lf,                                 // A — ground at home (was +dx,+dy, shifted -dx,-dy)
+            offsetPosition(lm, -dx, -dy, 0),     // B — ground at -dx,-dy (was home, shifted -dx,-dy)
+            lb,                                 // A — ground at home
+            offsetPosition(rf, -dx, -dy, 0),     // B — ground at -dx,-dy
+            rm,                                 // A — ground at home
+            offsetPosition(rb, -dx, -dy, 0)      // B — ground at -dx,-dy
+        );
+    }
+
+    // Phase 4: B lifts from -dx,-dy. A on ground at home.
+    static KeyFrame movePhase4(uint8_t height, const HexapodConfig& cfg, Vector v) {
+        int16_t z = calcHeight(height, cfg);
+        int16_t dx = static_cast<int>(cfg.footWalkX * v.x);
+        int16_t dy = static_cast<int>(cfg.footWalkX * v.y);
+        int16_t lift = cfg.footUpOffset;
+
+        Position lf = calcLegHome(cfg.anchorLFrontX, cfg.anchorLFrontY, z, cfg);
+        Position lm = calcLegHome(cfg.anchorLMiddleX, cfg.anchorLMiddleY, z, cfg);
+        Position lb = calcLegHome(cfg.anchorLBackX, cfg.anchorLBackY, z, cfg);
+        Position rf = calcLegHome(cfg.anchorLFrontX, -cfg.anchorLFrontY, z, cfg);
+        Position rm = calcLegHome(cfg.anchorLMiddleX, -cfg.anchorLMiddleY, z, cfg);
+        Position rb = calcLegHome(cfg.anchorLBackX, -cfg.anchorLBackY, z, cfg);
+
+        return KeyFrame(
+            lf,                                     // A — ground at home (supporting)
+            offsetPosition(lm, -dx, -dy, lift),      // B — UP at -dx,-dy
+            lb,                                     // A — ground at home (supporting)
+            offsetPosition(rf, -dx, -dy, lift),      // B — UP at -dx,-dy
+            rm,                                     // A — ground at home (supporting)
+            offsetPosition(rb, -dx, -dy, lift)       // B — UP at -dx,-dy
+        );
+    }
+
+    // Phase 5: B swings to +dx,+dy in air. A stays at home on ground.
+    static KeyFrame movePhase5(uint8_t height, const HexapodConfig& cfg, Vector v) {
+        int16_t z = calcHeight(height, cfg);
+        int16_t dx = static_cast<int>(cfg.footWalkX * v.x);
+        int16_t dy = static_cast<int>(cfg.footWalkX * v.y);
+        int16_t lift = cfg.footUpOffset;
+
+        Position lf = calcLegHome(cfg.anchorLFrontX, cfg.anchorLFrontY, z, cfg);
+        Position lm = calcLegHome(cfg.anchorLMiddleX, cfg.anchorLMiddleY, z, cfg);
+        Position lb = calcLegHome(cfg.anchorLBackX, cfg.anchorLBackY, z, cfg);
+        Position rf = calcLegHome(cfg.anchorLFrontX, -cfg.anchorLFrontY, z, cfg);
+        Position rm = calcLegHome(cfg.anchorLMiddleX, -cfg.anchorLMiddleY, z, cfg);
+        Position rb = calcLegHome(cfg.anchorLBackX, -cfg.anchorLBackY, z, cfg);
+
+        return KeyFrame(
+            lf,                                 // A — ground at home (supporting)
+            offsetPosition(lm, dx, dy, lift),   // B — UP + forward
+            lb,                                 // A — ground at home (supporting)
+            offsetPosition(rf, dx, dy, lift),   // B — UP + forward
+            rm,                                 // A — ground at home (supporting)
+            offsetPosition(rb, dx, dy, lift)    // B — UP + forward
+        );
+    }
+
+    // Phase 6: B plants at +dx,+dy. A still at home. ALL 6 ON GROUND.
+    static KeyFrame movePhase6(uint8_t height, const HexapodConfig& cfg, Vector v) {
+        int16_t z = calcHeight(height, cfg);
+        int16_t dx = static_cast<int>(cfg.footWalkX * v.x);
+        int16_t dy = static_cast<int>(cfg.footWalkX * v.y);
+
+        Position lf = calcLegHome(cfg.anchorLFrontX, cfg.anchorLFrontY, z, cfg);
+        Position lm = calcLegHome(cfg.anchorLMiddleX, cfg.anchorLMiddleY, z, cfg);
+        Position lb = calcLegHome(cfg.anchorLBackX, cfg.anchorLBackY, z, cfg);
+        Position rf = calcLegHome(cfg.anchorLFrontX, -cfg.anchorLFrontY, z, cfg);
+        Position rm = calcLegHome(cfg.anchorLMiddleX, -cfg.anchorLMiddleY, z, cfg);
+        Position rb = calcLegHome(cfg.anchorLBackX, -cfg.anchorLBackY, z, cfg);
+
+        return KeyFrame(
+            lf,                                 // A — ground at home
+            offsetPosition(lm, dx, dy, 0),      // B — ground at +dx,+dy
+            lb,                                 // A — ground at home
+            offsetPosition(rf, dx, dy, 0),      // B — ground at +dx,+dy
+            rm,                                 // A — ground at home
+            offsetPosition(rb, dx, dy, 0)       // B — ground at +dx,+dy
+        );
+    }
+
+    // Phase 7: BODY SHIFT. All 6 on ground, everything shifts -dx,-dy.
+    // A goes from home to -dx,-dy. B goes from +dx,+dy to home.
+    static KeyFrame movePhase7(uint8_t height, const HexapodConfig& cfg, Vector v) {
+        int16_t z = calcHeight(height, cfg);
+        int16_t dx = static_cast<int>(cfg.footWalkX * v.x);
+        int16_t dy = static_cast<int>(cfg.footWalkX * v.y);
+
+        Position lf = calcLegHome(cfg.anchorLFrontX, cfg.anchorLFrontY, z, cfg);
+        Position lm = calcLegHome(cfg.anchorLMiddleX, cfg.anchorLMiddleY, z, cfg);
+        Position lb = calcLegHome(cfg.anchorLBackX, cfg.anchorLBackY, z, cfg);
+        Position rf = calcLegHome(cfg.anchorLFrontX, -cfg.anchorLFrontY, z, cfg);
+        Position rm = calcLegHome(cfg.anchorLMiddleX, -cfg.anchorLMiddleY, z, cfg);
+        Position rb = calcLegHome(cfg.anchorLBackX, -cfg.anchorLBackY, z, cfg);
+
+        return KeyFrame(
+            offsetPosition(lf, -dx, -dy, 0),     // A — ground at -dx
+            lm,                                 // B — ground at home
+            offsetPosition(lb, -dx, -dy, 0),     // A — ground at -dx
+            rf,                                 // B — ground at home
+            offsetPosition(rm, -dx, -dy, 0),     // A — ground at -dx
+            rb                                  // B — ground at home
+        );
+    }
     
     // ========================================================================
-    // Animation Poses — unchanged
+    // Animation Poses
     // ========================================================================
     
     static KeyFrame anim1Phase1(uint8_t height, const HexapodConfig& cfg) {
