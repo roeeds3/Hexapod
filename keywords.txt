@@ -1,0 +1,74 @@
+#######################################
+# Syntax Coloring for HexapodKinematics
+#######################################
+
+#######################################
+# Classes (KEYWORD1)
+#######################################
+
+Hexapod	KEYWORD1
+HexapodConfig	KEYWORD1
+HexapodLeg	KEYWORD1
+HexapodServo	KEYWORD1
+Position	KEYWORD1
+KeyFrame	KEYWORD1
+Poses	KEYWORD1
+LegId	KEYWORD1
+DriverType	KEYWORD1
+
+#######################################
+# Methods (KEYWORD2)
+#######################################
+
+begin	KEYWORD2
+update	KEYWORD2
+setPose	KEYWORD2
+setLegPosition	KEYWORD2
+goHome	KEYWORD2
+goSleep	KEYWORD2
+walkForward	KEYWORD2
+walkBackward	KEYWORD2
+rotateClockwise	KEYWORD2
+rotateCounterClockwise	KEYWORD2
+setHeight	KEYWORD2
+getHeight	KEYWORD2
+zeroAllServos	KEYWORD2
+identifyAllLegs	KEYWORD2
+getLeg	KEYWORD2
+setFootPosition	KEYWORD2
+zeroAngles	KEYWORD2
+identifyLeg	KEYWORD2
+getFootPosition	KEYWORD2
+getFootServo	KEYWORD2
+getKneeServo	KEYWORD2
+getHipServo	KEYWORD2
+getConfig	KEYWORD2
+setAngle	KEYWORD2
+setSpeed	KEYWORD2
+getTargetAngle	KEYWORD2
+getTargetSpeed	KEYWORD2
+home	KEYWORD2
+sleep	KEYWORD2
+walkPhase0	KEYWORD2
+walkPhase1	KEYWORD2
+walkPhase2	KEYWORD2
+walkPhase3	KEYWORD2
+rotatePhase0	KEYWORD2
+rotatePhase1	KEYWORD2
+rotatePhase2	KEYWORD2
+rotatePhase3	KEYWORD2
+lerp	KEYWORD2
+
+#######################################
+# Constants (LITERAL1)
+#######################################
+
+LFRONT	LITERAL1
+LMIDDLE	LITERAL1
+LBACK	LITERAL1
+RFRONT	LITERAL1
+RMIDDLE	LITERAL1
+RBACK	LITERAL1
+DRIVER_PCA9685	LITERAL1
+DRIVER_MAESTRO	LITERAL1
+DRIVER_DIRECT_PWM	LITERAL1
